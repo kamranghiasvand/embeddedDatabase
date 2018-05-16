@@ -22,14 +22,14 @@ public class SqliteRepository {
         appConfig = config;
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection(config.getConnectionString(), config.getDbUser(), config.getDbPass());
+
         String cmd = "CREATE TABLE IF NOT EXISTS `records` (\n" +
                 "  `id` bigint(20) NOT NULL,\n" +
                 "  `count` int(11) DEFAULT NULL,\n" +
                 "  `current_cell` int(11) DEFAULT NULL,\n" +
                 "  `current_lac` int(11) DEFAULT NULL,\n" +
                 "  `current_vlr` bigint(20) DEFAULT NULL,\n" +
-                "  `event_type` tinyint(4) DEFAULT NULL,\n" +
-                "  PRIMARY KEY (`id`)\n" +
+                "  `event_type` tinyint(4) DEFAULT NULL\n" +
                 ")";
 
         Statement statement = connection.createStatement();
