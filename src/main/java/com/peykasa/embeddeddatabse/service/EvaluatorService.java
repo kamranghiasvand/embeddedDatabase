@@ -6,7 +6,7 @@ import com.peykasa.embeddeddatabse.domain.model.EvState;
 import com.peykasa.embeddeddatabse.domain.model.EvaluatorResult;
 import com.peykasa.embeddeddatabse.domain.model.EvaluatorTask;
 import com.peykasa.embeddeddatabse.domain.model.ReportModel;
-import com.peykasa.embeddeddatabse.domain.repository.ReportRepository;
+import com.peykasa.embeddeddatabse.domain.repository.SqliteRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +31,10 @@ public class EvaluatorService {
   //  private ConnectionSource source;
     private EvaluatorResult result;
     private Random random;
-    private ReportRepository repository;
+    private SqliteRepository repository;
 
     @Autowired
-    public EvaluatorService(AppConfig config, ReportRepository repository) throws SQLException, ClassNotFoundException {
+    public EvaluatorService(AppConfig config, SqliteRepository repository) throws SQLException, ClassNotFoundException {
         this.repository = repository;
         this.config = config;
       //  source = new JdbcConnectionSource(config.getConnectionString(), config.getDbUser(), config.getDbPass());
@@ -394,7 +394,7 @@ public class EvaluatorService {
 
     private void insertBulkData(List<ReportModel> entities) throws Exception {
         LOGGER.debug("insert " + entities.size() + " in ");
-        repository.bulkSave(entities);
+        repository.insertBulk(entities);
 
 
         //repository.saveAll(dtos);
@@ -462,17 +462,6 @@ public class EvaluatorService {
         byte[] bytes = new byte[1];
         random.nextBytes(bytes);
         res.setEventType(bytes[0]);
-        res.setImsi(random.nextLong());
-        res.setIndex(random.nextInt());
-        res.setLatitude(random.nextDouble());
-        res.setLongitude(random.nextDouble());
-        res.setMsisdn(random.nextLong());
-        res.setPreLatitude(random.nextDouble());
-        res.setPreLongitude(random.nextDouble());
-        res.setPreviousCell(random.nextInt());
-        res.setPreviousLAC(random.nextInt());
-        res.setPreviousVLR(random.nextLong());
-        res.setRecordTimeStamp(random.nextInt());
         return res;
     }
 }
