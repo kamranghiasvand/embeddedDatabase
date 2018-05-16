@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author kamran
@@ -32,16 +35,15 @@ public class EvaluatorService {
     private EvaluatorResult result;
     private Random random;
     private SqliteRepository repository;
+    ExecutorService executorService ;
 
     @Autowired
     public EvaluatorService(AppConfig config, SqliteRepository repository) throws SQLException, ClassNotFoundException {
         this.repository = repository;
         this.config = config;
-      //  source = new JdbcConnectionSource(config.getConnectionString(), config.getDbUser(), config.getDbPass());
-      //  TableUtils.createTableIfNotExists(source, ReportModel.class);
-//        tableDao = DaoManager.createDao(source, ReportModel.class);
         result = new EvaluatorResult();
         random = new Random((new Date()).getTime());
+        executorService   = Executors.newFixedThreadPool(config.getConcurrentThread());
 
     }
 
@@ -125,9 +127,10 @@ public class EvaluatorService {
         EvaluatorTask task = addTask(EvaluatorTask.TaskType.Insert);
         try {
             long count = 0;
-            List<Thread> workers = new ArrayList<>();
+            List<Future<?>> workers = new ArrayList<>();
             while (count < config.getInsertMaxRecord()) {
-                Thread worker = new Thread(() -> {
+
+                Future<?> future=executorService.submit(() -> {
                     try {
                         ArrayList<ReportModel> batch = createBatchFake(config.getInsertBatchSize());
                         insertBulkData(batch);
@@ -135,12 +138,11 @@ public class EvaluatorService {
                         LOGGER.error(ex.getMessage(), ex);
                     }
                 });
-                worker.start();
-                workers.add(worker);
+                workers.add(future);
                 count += config.getInsertBatchSize();
                 changePercent(task, count, config.getInsertMaxRecord());
             }
-            for (Thread worker : workers) worker.join();
+            for (Future<?> worker : workers) worker.get();
         } catch (Exception ex) {
             task.setException(ex);
             LOGGER.error(ex.getMessage(), ex);

@@ -58,4 +58,6 @@ public class AppConfig {
     private String dbPass;
     @Value("${app.evaluator.dbUser:}")
     private String dbUser;
+    @Value("${app.evaluator.concurrentThreads:10}")
+    private int concurrentThread;
 }

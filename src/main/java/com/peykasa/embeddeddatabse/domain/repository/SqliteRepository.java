@@ -22,7 +22,7 @@ public class SqliteRepository {
         appConfig = config;
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection(config.getConnectionString(), config.getDbUser(), config.getDbPass());
-
+        connection.setAutoCommit(false);
         String cmd = "CREATE TABLE IF NOT EXISTS `records` (\n" +
                 "  `id` bigint(20) NOT NULL,\n" +
                 "  `count` int(11) DEFAULT NULL,\n" +
@@ -35,6 +35,7 @@ public class SqliteRepository {
         Statement statement = connection.createStatement();
         statement.execute(cmd);
         statement.close();
+        connection.commit();
         try {
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery("SELECT MAX(id) max_id FROM records;");
@@ -45,13 +46,14 @@ public class SqliteRepository {
             }
             rs.close();
             statement.close();
+            connection.commit();
         } catch (Exception ex) {
             lastId = 0;
         }
     }
 
     public void insertBulk(Collection<ReportModel> entities) throws SQLException {
-        connection.setAutoCommit(false);
+
         String cmd = "INSERT INTO records (id,count,current_cell,current_lac,current_vlr,event_type) VALUES ";
 
         for (ReportModel m :
@@ -63,6 +65,5 @@ public class SqliteRepository {
         statement.execute(cmd);
         statement.close();
         connection.commit();
-        connection.setAutoCommit(true);
     }
 }
