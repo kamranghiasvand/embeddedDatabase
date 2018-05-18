@@ -28,9 +28,9 @@ public class AppConfig {
     @Value("${app.evaluator.fetch.enabled:true}")
     private boolean fetchEnabled;
 
-    @Value("${ app.evaluator.update.maxRecord:10000}")
+    @Value("${app.evaluator.update.maxRecord:10000}")
     private long updateMaxRecord;
-    @Value("${ app.evaluator.update.batchSize:1000}")
+    @Value("${app.evaluator.update.batchSize:1000}")
     private long updateBatchSize;
     @Value("${app.evaluator.update.concurrent:false}")
     private boolean updateConcurrent;

@@ -7,6 +7,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @SpringBootApplication
@@ -16,7 +18,7 @@ public class EmbeddedDatabaseApplication {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         try {
             BasicConfigurator.configure();
-            ConfigurableApplicationContext application = SpringApplication.run(EmbeddedDatabaseApplication.class, args);
+           ConfigurableApplicationContext application = SpringApplication.run(EmbeddedDatabaseApplication.class, args);
 
             EvaluatorService evaluator = application.getBean(EvaluatorService.class);
             evaluator.start();
